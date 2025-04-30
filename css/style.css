@@ -36,7 +36,6 @@ body.dark {
     color: var(--text-light);
 }
 
-/* Loader Section */
 #loader {
     display: flex;
     flex-direction: column;
@@ -99,7 +98,6 @@ body.dark #loader {
 
 #fileInput+label:hover {
     background-color: var(--primary-hover);
-    transform: translateY(-2px);
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
@@ -115,7 +113,6 @@ body.dark #loader {
     width: 100%;
 }
 
-/* Main App Section */
 #mainApp {
     display: none;
     width: 100%;
@@ -158,12 +155,10 @@ body.dark #loader {
     transform: translate(-50%, -50%);
 }
 
-/* Si prefieres que sea exactamente cuadrada (1:1) */
 .img-placeholder img.cuadrada-perfecta {
     width: 100%;
     height: 100%;
     object-fit: contain;
-    /* Mantiene relación de aspecto sin recortar */
 }
 
 body.dark .img-placeholder {
@@ -264,7 +259,7 @@ body.dark .containerFondo {
     border-radius: 20px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     margin-bottom: 10px;
-    
+
 }
 
 body.dark .switch-container {
@@ -313,7 +308,7 @@ body.dark .switch-container {
 }
 
 input:checked+.slider {
-    background-color: var(--primary-color);
+    background-color: var(--primary-hover);
 }
 
 input:focus+.slider {
@@ -322,4 +317,10 @@ input:focus+.slider {
 
 input:checked+.slider:before {
     transform: translateX(26px);
+}
+
+#subtitulo {
+    color: var(--primary-hover);
+    font-weight: bold;
+    font-style: normal;
 }

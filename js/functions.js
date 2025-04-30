@@ -2,9 +2,32 @@ const productos = [];
 let codigo = "";
 let idiomaActual = "es";
 
+const traducciones = {
+    es: {
+        languageLabel: "Idioma",
+        languageText: "Español",
+        languageTextAlt: "English",
+        themeLabel: "Tema",
+        themeText: "Claro",
+        themeTextAlt: "Oscuro",
+        respuesta: "Código de barras",
+        fechaText: "Fecha actual"
+    },
+    en: {
+        languageLabel: "Language",
+        languageText: "Spanish",
+        languageTextAlt: "English",
+        themeLabel: "Theme",
+        themeText: "Light",
+        themeTextAlt: "Dark",
+        respuesta: "Barcode",
+        fechaText: "Current Date"
+    }
+};
 
 document.addEventListener("DOMContentLoaded", () => {
     const fileInput = document.getElementById("fileInput");
+
     fileInput.addEventListener("change", async (e) => {
         const file = e.target.files[0];
         if (!file) return;
@@ -25,7 +48,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             document.getElementById("loader").style.display = "none";
             document.getElementById("mainApp").style.display = "block";
-            initImages();
+            cargarImagenes();
             setInterval(fecha, 1000);
 
         } catch (err) {
@@ -35,73 +58,40 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
-document.addEventListener("DOMContentLoaded", function () {
+function cargarImagenes() {
     const containerMono = document.getElementById("MonoImgContainer");
     const containerFranco = document.getElementById("FranImgContainer");
-    document.getElementById('language-text-es').classList.add('active');
-    document.getElementById('fondo-text-light').classList.add('active');
 
-    // Crear imágenes
     const imgMono = document.createElement("img");
     const imgFran = document.createElement("img");
 
-    // Configurar imágenes
     imgMono.src = "img/MonoAutorizo.jpg";
     imgMono.alt = "Imagen del Mono";
 
     imgFran.src = "img/Fran.png";
     imgFran.alt = "Imagen de Fran";
 
-    // Aplicar estilos consistentes
     [imgMono, imgFran].forEach(img => {
         img.style.width = "100%";
         img.style.height = "100%";
         img.style.objectFit = "contain";
     });
 
-    // Agregar imágenes a los contenedores
     containerMono.appendChild(imgMono);
     containerFranco.appendChild(imgFran);
-});
+
+    document.getElementById('language-text-es').classList.add('active');
+    document.getElementById('fondo-text-light').classList.add('active');
+}
 
 document.addEventListener("keydown", (event) => {
-    if (event.key != "Enter") {
+    if (event.key !== "Enter") {
         codigo += event.key;
     } else {
         buscar(codigo);
         codigo = "";
     }
 });
-
-document.addEventListener("DOMContentLoaded", async () => {
-    const datosEs = await cargarArchivo("data/products_es.txt");
-    const datosEn = await cargarArchivo("data/products_en.txt");
-
-    const lineasEs = datosEs.trim().split("\n");
-    const lineasEn = datosEn.trim().split("\n");
-
-    for (let i = 0; i < lineasEs.length; i++) {
-        const [idEs, nombreEs, precioEs, imagenEs] = lineasEs[i].split(",").map(e => e.trim());
-        const [idEn, nombreEn, precioEn, imagenEn] = lineasEn[i].split(",").map(e => e.trim());
-
-        if (idEs !== idEn || precioEs !== precioEn || imagenEs !== imagenEn) {
-            console.warn(`Inconsistencia en el producto ${idEs}`);
-        }
-
-        productos.push([
-            idEs,
-            { es: nombreEs, en: nombreEn },
-            precioEs,
-            imagenEs
-        ]);
-    }
-});
-
-async function cargarArchivo(ruta) {
-    const response = await fetch(ruta);
-    if (!response.ok) throw new Error(`Error al cargar ${ruta}: ${response.statusText}`);
-    return await response.text();
-}
 
 function buscar(codigo) {
     let encontrado = false;
@@ -128,7 +118,6 @@ function buscar(codigo) {
     }
 }
 
-
 function fecha() {
     const f = new Date();
     const dia = f.getDate().toString().padStart(2, '0');
@@ -141,9 +130,6 @@ function fecha() {
     document.getElementById("fecha").innerHTML = `${dia}/${mes}/${anio}, ${hora}:${minutos}:${segundos}`;
 }
 
-setInterval(fecha, 0);
-
-
 function cambiarIdioma() {
     const toggle = document.getElementById('language-toggle');
     idiomaActual = toggle.checked ? 'en' : 'es';
@@ -151,22 +137,18 @@ function cambiarIdioma() {
 
     const t = traducciones[idiomaActual];
 
-    // Actualizar textos
-    document.getElementById('Respuesta').innerHTML = ` 
+    document.getElementById('Respuesta').innerHTML = `
         <img src="./img/barcode.gif" alt="Código de barras" width="50%" height="50%" />
         <br> ${t.respuesta}
     `;
     document.getElementById('fechaText').textContent = t.fechaText;
 
-    // Actualizar texto del idioma
     document.getElementById('language-text-es').textContent = t.languageText;
     document.getElementById('language-text-en').textContent = t.languageTextAlt;
 
-    // Actualizar texto del fondo
     document.getElementById('fondo-text-light').textContent = t.themeText;
     document.getElementById('fondo-text-dark').textContent = t.themeTextAlt;
 
-    // Actualizar estado visual del switch de idioma
     if (idiomaActual === 'es') {
         document.getElementById('language-text-es').classList.add('active');
         document.getElementById('language-text-en').classList.remove('active');
@@ -175,7 +157,6 @@ function cambiarIdioma() {
         document.getElementById('language-text-en').classList.add('active');
     }
 }
-
 
 function cambiarFondo() {
     const toggle = document.getElementById('fondo-toggle');
@@ -190,18 +171,19 @@ function cambiarFondo() {
         document.getElementById('fondo-text-dark').classList.add('active');
     }
 
+    actualizarImagenesFondo(fondo);
+}
+
+function actualizarImagenesFondo(fondo) {
     const containerMono = document.getElementById("MonoImgContainer");
     const containerFran = document.getElementById("FranImgContainer");
 
-    // Limpiar contenedores
     containerMono.innerHTML = "";
     containerFran.innerHTML = "";
 
-    // Crear nuevas imágenes
     const imgMono = document.createElement("img");
     const imgFran = document.createElement("img");
 
-    // Configurar imágenes según el modo
     if (fondo === 'dark') {
         imgMono.src = "img/MonoNoAutorizo.jpg";
         imgFran.src = "img/Fran2.png";
@@ -210,7 +192,6 @@ function cambiarFondo() {
         imgFran.src = "img/Fran.png";
     }
 
-    // Aplicar estilos consistentes
     [imgMono, imgFran].forEach(img => {
         img.alt = "Imagen";
         img.style.width = "100%";
@@ -218,35 +199,6 @@ function cambiarFondo() {
         img.style.objectFit = "contain";
     });
 
-    // Agregar imágenes a los contenedores
     containerMono.appendChild(imgMono);
     containerFran.appendChild(imgFran);
 }
-
-const traducciones = {
-    es: {
-        languageLabel: "Idioma",
-        languageText: "Español",
-        languageTextAlt: "English", // Cambio para "English"
-        themeLabel: "Tema",
-        themeText: "Claro",
-        themeTextAlt: "Oscuro",
-        respuesta: "Código de barras",
-        fechaText: "Fecha actual"
-    },
-    en: {
-        languageLabel: "Language",
-        languageText: "Spanish",
-        languageTextAlt: "English", // Cambio para "Español"
-        themeLabel: "Theme",
-        themeText: "Light",
-        themeTextAlt: "Dark",
-        respuesta: "Barcode",
-        fechaText: "Current Date"
-    }
-};
-
-
-
-
-
